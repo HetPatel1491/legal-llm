@@ -11,7 +11,7 @@ function LandingPage({ onSignIn, onSignUp, onGuest }) {
       <div className="landing-content">
         {/* Header */}
         <div className="landing-header">
-          <h1>⚖️ Legal LLM</h1>
+          <h1>⚖️ Legal AI</h1>
           <p>Your AI Legal Assistant</p>
           <p className="subtitle">Get instant answers to your legal questions</p>
         </div>
@@ -33,7 +33,7 @@ function LandingPage({ onSignIn, onSignUp, onGuest }) {
 
         {/* Footer */}
         <div className="landing-footer">
-          <p>Help poor people understand law. Free legal assistance for everyone.</p>
+          <p>Help people understand law. Free legal assistance for everyone.</p>
         </div>
       </div>
     </div>
