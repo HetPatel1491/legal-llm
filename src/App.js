@@ -11,31 +11,31 @@ function App() {
   const [user, setUser] = useState(null);
 
   const handleGuestStart = () => {
+    console.log('Guest button clicked');
     setIsGuest(true);
     setUser(null);
-    // Clear previous conversations when starting as guest
     localStorage.removeItem('conversations');
     setCurrentPage('chat');
   };
 
   const handleSigninSuccess = (userData) => {
+    console.log('Sign in successful');
     setUser(userData);
     setIsGuest(false);
-    // Clear previous conversations when signing in
     localStorage.removeItem('conversations');
     setCurrentPage('chat');
   };
 
   const handleSignupSuccess = (userData) => {
+    console.log('Sign up successful');
     setUser(userData);
     setIsGuest(false);
-    // Clear previous conversations when signing up
     localStorage.removeItem('conversations');
     setCurrentPage('chat');
   };
 
   const handleBackToHome = () => {
-    // Clear conversations and go back to landing
+    console.log('Back to home');
     localStorage.removeItem('conversations');
     setCurrentPage('landing');
     setUser(null);
@@ -43,10 +43,12 @@ function App() {
   };
 
   const handleGoToSignin = () => {
+    console.log('Going to sign in');
     setCurrentPage('signin');
   };
 
   const handleGoToSignup = () => {
+    console.log('Going to sign up');
     setCurrentPage('signup');
   };
 
@@ -54,9 +56,9 @@ function App() {
     <div className="App">
       {currentPage === 'landing' && (
         <LandingPage 
-          onGuestStart={handleGuestStart}
-          onSigninClick={handleGoToSignin}
-          onSignupClick={handleGoToSignup}
+          onSignIn={handleGoToSignin}
+          onSignUp={handleGoToSignup}
+          onGuest={handleGuestStart}
         />
       )}
       
