@@ -369,3 +369,33 @@
   text-align: center;
   margin-top: 16px;
 }
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  color: #333;
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .menu-btn {
+    display: block;
+  }
+  
+  .chat-page-with-sidebar {
+    position: relative;
+  }
+  
+  .chat-page-with-sidebar .Sidebar {
+    position: absolute;
+    left: -250px;
+    transition: left 0.3s;
+    z-index: 1000;
+  }
+  
+  .chat-page-with-sidebar.sidebar-open .Sidebar {
+    left: 0;
+  }
+}

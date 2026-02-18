@@ -10,6 +10,11 @@ function ChatPage({ isGuest, onBackToHome }) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [questionCount, setQuestionCount] = useState(0);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -58,6 +63,7 @@ function ChatPage({ isGuest, onBackToHome }) {
         setQuestionCount(conversation.messages.filter(m => m.role === 'user').length);
       }
     }
+    setSidebarOpen(false);
   };
 
   const deleteConversation = (id) => {
@@ -135,7 +141,7 @@ function ChatPage({ isGuest, onBackToHome }) {
   };
 
   return (
-    <div className="chat-page-with-sidebar">
+    <div className={`chat-page-with-sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
       <Sidebar
         conversations={conversations}
         currentConversationId={currentConversationId}
@@ -148,6 +154,7 @@ function ChatPage({ isGuest, onBackToHome }) {
         <div className="chat-container">
           <div className="chat-header">
             <button className="back-btn" onClick={onBackToHome}>← Back</button>
+            <button className="menu-btn" onClick={toggleSidebar}>☰ Menu</button>
             <h1>⚖️ Legal AI Assistant - v1.0</h1>
             {isGuest && <p className="guest-badge">Guest Mode ({questionCount}/5)</p>}
             
