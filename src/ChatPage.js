@@ -148,7 +148,7 @@ function ChatPage({ isGuest, onBackToHome }) {
         <div className="chat-container">
           <div className="chat-header">
             <button className="back-btn" onClick={onBackToHome}>← Back</button>
-            <h1>⚖️ Legal LLM Assistant</h1>
+            <h1>⚖️ Legal AI Assistant - v1.0</h1>
             {isGuest && <p className="guest-badge">Guest Mode ({questionCount}/5)</p>}
             
             {isGuest && (
