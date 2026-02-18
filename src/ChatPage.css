@@ -382,7 +382,35 @@
 @media (max-width: 768px) {
   .menu-btn {
     display: block;
+    margin: 0 10px;
   }
+  
+  .chat-page-with-sidebar {
+    display: flex;
+    position: relative;
+  }
+  
+  .chat-page-with-sidebar > div:first-child {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    width: 70%;
+    height: 100vh;
+    background: white;
+    z-index: 999;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+  }
+  
+  .chat-page-with-sidebar.sidebar-open > div:first-child {
+    left: 0;
+  }
+  
+  .chat-page {
+    flex: 1;
+    width: 100%;
+  }
+
   
   .chat-page-with-sidebar {
     position: relative;
