@@ -9,21 +9,40 @@ function App() {
   const [currentPage, setCurrentPage] = useState('landing');
   const [isGuest, setIsGuest] = useState(false);
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Check if user is already logged in on page load
+  // Check if user is logged in on page load
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     const userData = localStorage.getItem('user');
+    const lastPage = localStorage.getItem('lastPage');
     
     if (token && userData) {
+      // User is logged in
       setUser(JSON.parse(userData));
       setIsGuest(false);
-      setCurrentPage('chat');
+      
+      // If they were in chat before reload, stay in chat
+      if (lastPage === 'chat') {
+        setCurrentPage('chat');
+      } else {
+        // Otherwise go to landing
+        setCurrentPage('landing');
+      }
+    } else {
+      // Not logged in - always go to landing
+      setCurrentPage('landing');
     }
+    
+    setIsLoading(false);
   }, []);
 
+  // Save current page to localStorage
+  useEffect(() => {
+    localStorage.setItem('lastPage', currentPage);
+  }, [currentPage]);
+
   const handleGuestStart = () => {
-    console.log('Guest button clicked');
     setIsGuest(true);
     setUser(null);
     localStorage.removeItem('conversations');
@@ -31,36 +50,39 @@ function App() {
   };
 
   const handleSigninSuccess = (userData) => {
-    console.log('Sign in successful');
     setUser(userData);
     setIsGuest(false);
+    // Don't clear conversations - keep them!
     setCurrentPage('chat');
   };
 
   const handleSignupSuccess = (userData) => {
-    console.log('Sign up successful');
     setUser(userData);
     setIsGuest(false);
+    // Don't clear conversations - keep them!
     setCurrentPage('chat');
   };
 
   const handleBackToHome = () => {
-    console.log('Back to home');
     localStorage.removeItem('conversations');
     setCurrentPage('landing');
     setUser(null);
     setIsGuest(false);
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user');
   };
 
   const handleGoToSignin = () => {
-    console.log('Going to sign in');
     setCurrentPage('signin');
   };
 
   const handleGoToSignup = () => {
-    console.log('Going to sign up');
     setCurrentPage('signup');
   };
+
+  if (isLoading) {
+    return <div className="App">Loading...</div>;
+  }
 
   return (
     <div className="App">
@@ -81,7 +103,7 @@ function App() {
       
       {currentPage === 'signin' && (
         <SigninPage 
-          onBackToHome={handleBackToHome}
+          onBackToHome={handleGoToSignin}
           onGoToSignup={handleGoToSignup}
           onSigninSuccess={handleSigninSuccess}
         />
@@ -89,7 +111,7 @@ function App() {
       
       {currentPage === 'signup' && (
         <SignupPage 
-          onBackToHome={handleBackToHome}
+          onBackToHome={handleGoToSignin}
           onGoToSignin={handleGoToSignin}
           onSignupSuccess={handleSignupSuccess}
         />
