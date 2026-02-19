@@ -18,6 +18,7 @@ function App() {
     if (token && userData) {
       setUser(JSON.parse(userData));
       setIsGuest(false);
+      setCurrentPage('chat');
     }
   }, []);
 
