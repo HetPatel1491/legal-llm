@@ -64,13 +64,14 @@ function App() {
   };
 
   const handleBackToHome = () => {
-    localStorage.removeItem('conversations');
-    setCurrentPage('landing');
-    setUser(null);
-    setIsGuest(false);
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user');
-  };
+  // DON'T remove conversations - keep them!
+  // localStorage.removeItem('conversations');  // ← COMMENT THIS OUT
+  setCurrentPage('landing');
+  setUser(null);
+  setIsGuest(false);
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('user');
+};
 
   const handleGoToSignin = () => {
     setCurrentPage('signin');
