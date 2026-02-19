@@ -16,8 +16,51 @@ function ChatPage({ isGuest, onBackToHome }) {
     setSidebarOpen(!sidebarOpen);
   };
 
+  // Load conversations on mount
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
+    loadConversations();
+  }, []);
+
+  // Save conversations to localStorage whenever they change
+  useEffect(() => {
+    if (conversations.length > 0) {
+      localStorage.setItem('conversations', JSON.stringify(conversations));
+    }
+  }, [conversations]);
+
+  const loadConversations = async () => {
+    const token = localStorage.getItem('access_token');
+    const userData = localStorage.getItem('user');
+
+    if (token && userData && !isGuest) {
+      // User is logged in - load from database
+      const user = JSON.parse(userData);
+      try {
+        const response = await fetch(
+          `https://legal-llm-backend-production.up.railway.app/conversations/${user.id}`
+        );
+        const data = await response.json();
+
+        if (data.success && data.conversations.length > 0) {
+          setConversations(data.conversations);
+          const mostRecent = data.conversations[0];
+          setCurrentConversationId(mostRecent.id);
+          setMessages(mostRecent.messages);
+        } else {
+          createNewConversation();
+        }
+      } catch (error) {
+        console.log('Could not load from database, using localStorage');
+        loadFromLocalStorage();
+      }
+    } else {
+      // Guest user - load from localStorage
+      loadFromLocalStorage();
+    }
+  };
+
+  const loadFromLocalStorage = () => {
     const savedConversations = localStorage.getItem('conversations');
     if (savedConversations) {
       const convs = JSON.parse(savedConversations);
@@ -33,13 +76,7 @@ function ChatPage({ isGuest, onBackToHome }) {
     } else {
       createNewConversation();
     }
-  }, []);
-
-  useEffect(() => {
-    if (conversations.length > 0) {
-      localStorage.setItem('conversations', JSON.stringify(conversations));
-    }
-  }, [conversations]);
+  };
 
   const createNewConversation = () => {
     const newId = Date.now().toString();
@@ -130,6 +167,38 @@ function ChatPage({ isGuest, onBackToHome }) {
       const updatedMessages = [...newMessages, botMessage];
       setMessages(updatedMessages);
       saveMessagesToConversation(updatedMessages);
+
+      // Save to database if user is logged in (not guest)
+      const token = localStorage.getItem('access_token');
+      const userData = localStorage.getItem('user');
+      
+      if (token && userData && !isGuest) {
+        const user = JSON.parse(userData);
+        
+        // Format messages for database
+        const messagesToSave = updatedMessages.map(msg => ({
+          question: msg.role === 'user' ? msg.content : '',
+          answer: msg.role === 'bot' ? msg.content : ''
+        }));
+
+        try {
+          await fetch('https://legal-llm-backend-production.up.railway.app/conversations/save', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              conversation_id: currentConversationId,
+              messages: messagesToSave,
+              title: userQuestion.substring(0, 50) || 'Untitled',
+              user_id: user.id
+            })
+          });
+        } catch (dbError) {
+          console.log('Note: Could not save to database, but chat saved locally');
+        }
+      }
+
     } catch (error) {
       const botMessage = { role: 'bot', content: `Error: ${error.message}` };
       const updatedMessages = [...newMessages, botMessage];
@@ -173,7 +242,7 @@ function ChatPage({ isGuest, onBackToHome }) {
           <div className="chat-messages">
             {messages.length === 0 && (
               <div className="empty-state">
-                <h2>⚖️ Welcome to Legal LLM</h2>
+                <h2>⚖️ Welcome to Legal AI</h2>
                 <p>Ask any legal question and get instant answers</p>
               </div>
             )}
@@ -207,7 +276,7 @@ function ChatPage({ isGuest, onBackToHome }) {
           </div>
 
           <div className="disclaimer">
-            ⚠️ Legal LLM is AI and can make mistakes. Please double-check the responses before using them as legal advice.
+            ⚠️ Legal AI is AI and can make mistakes. Please double-check the responses before using them as legal advice.
           </div>
         </div>
       </div>
