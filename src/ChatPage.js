@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import Sidebar from './Sidebar';
 import './ChatPage.css';
 
-function ChatPage({ isGuest, onBackToHome }) {
+function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
   const [conversations, setConversations] = useState([]);
   const [currentConversationId, setCurrentConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
