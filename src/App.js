@@ -33,7 +33,6 @@ function App() {
     console.log('Sign in successful');
     setUser(userData);
     setIsGuest(false);
-    localStorage.removeItem('conversations');
     setCurrentPage('chat');
   };
 
@@ -41,7 +40,6 @@ function App() {
     console.log('Sign up successful');
     setUser(userData);
     setIsGuest(false);
-    localStorage.removeItem('conversations');
     setCurrentPage('chat');
   };
 
