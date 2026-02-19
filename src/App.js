@@ -5,6 +5,19 @@ import SigninPage from './SigninPage';
 import SignupPage from './SignupPage';
 import './App.css';
 
+useEffect(() => {
+  // Check if user is already logged in on page load
+  const token = localStorage.getItem('access_token');
+  const user = localStorage.getItem('user');
+  
+  if (token && user) {
+    setUser(JSON.parse(user));
+    setIsGuest(false);
+    // Don't auto-navigate to chat, keep on landing
+    setCurrentPage('landing');
+  }
+}, []);
+
 function App() {
   const [currentPage, setCurrentPage] = useState('landing');
   const [isGuest, setIsGuest] = useState(false);
