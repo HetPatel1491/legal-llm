@@ -229,10 +229,10 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
             
             {isGuest && (
               <div className="auth-buttons">
-                <button className="header-btn sign-in-btn" onClick={() => alert('Sign In page coming next')}>
+                <button className="header-btn sign-in-btn" onClick={onSignIn}>
                   Sign In
                 </button>
-                <button className="header-btn sign-up-btn" onClick={() => alert('Sign Up page coming next')}>
+                <button className="header-btn sign-up-btn" onClick={onSignUp}>
                   Sign Up
                 </button>
               </div>

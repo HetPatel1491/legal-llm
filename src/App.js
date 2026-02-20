@@ -106,7 +106,7 @@ function App() {
       
       {currentPage === 'signin' && (
         <SigninPage 
-          onBackToHome={handleGoToSignin}
+          onBackToHome={handleBackToHome}
           onGoToSignup={handleGoToSignup}
           onSigninSuccess={handleSigninSuccess}
         />
@@ -114,7 +114,7 @@ function App() {
       
       {currentPage === 'signup' && (
         <SignupPage 
-          onBackToHome={handleGoToSignin}
+          onBackToHome={handleBackToHome}
           onGoToSignin={handleGoToSignin}
           onSignupSuccess={handleSignupSuccess}
         />
