@@ -99,6 +99,8 @@ function App() {
         <ChatPage 
           isGuest={isGuest}
           onBackToHome={handleBackToHome}
+          onSignIn={handleGoToSignin}
+          onSignUp={handleGoToSignup}
         />
       )}
       
