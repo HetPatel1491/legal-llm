@@ -404,6 +404,7 @@
   
   .chat-page-with-sidebar.sidebar-open > div:first-child {
     left: 0;
+    z-index: 1000;
   }
   
   .chat-page {
@@ -426,4 +427,19 @@
   .chat-page-with-sidebar.sidebar-open .Sidebar {
     left: 0;
   }
+}
+
+.format-selector {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  background: white;
+  margin-right: 10px;
+}
+
+.format-selector:disabled {
+  background: #f0f0f0;
+  cursor: not-allowed;
 }

@@ -11,6 +11,7 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
   const [loading, setLoading] = useState(false);
   const [questionCount, setQuestionCount] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [responseFormat, setResponseFormat] = useState('detailed');
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -126,6 +127,45 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
     );
   };
 
+  const getSystemPrompt = () => {
+    const prompts = {
+      detailed: `You are an expert legal assistant. ALWAYS format your answers professionally and clearly:
+
+**Introduction:** Start with 1-2 sentences explaining the concept briefly.
+
+**Main Definition & Explanation:** Provide 2-3 detailed paragraphs with comprehensive information.
+
+**Types/Categories:** If applicable, list different types using bullet points (•).
+
+**Key Elements or Features:** Use bullet points for main characteristics, requirements, or components.
+
+**Examples:** Provide practical real-world examples in 1-2 paragraphs.
+
+**Important Notes:** Add any important disclaimers, variations by jurisdiction, or special considerations.
+
+Be accurate, helpful, and practical in your legal explanations.`,
+
+      bullets: `You are a legal assistant. Answer the question ONLY using bullet points. Each bullet should be concise and clear. Include:
+- Key definition
+- Main points (3-5 bullets)
+- Important notes
+
+Keep it brief and scannable.`,
+
+      simple: `You are a legal assistant. Answer the question in ONE paragraph only (3-4 sentences). Be concise and clear. Skip examples and detailed explanations. Just the essential information.`,
+
+      qa: `You are a legal assistant. Format your answer as Q&A:
+
+Q: [Restate the user's question]
+
+A: [Provide a clear, comprehensive answer in 2-3 paragraphs]
+
+Keep it professional and accurate.`
+    };
+
+    return prompts[responseFormat] || prompts.detailed;
+  };
+
   const handleSendMessage = async () => {
     if (!input.trim()) return;
 
@@ -152,7 +192,10 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ question: userQuestion }),
+        body: JSON.stringify({ 
+          question: userQuestion,
+          format: responseFormat
+        }),
       });
 
       const data = await response.json();
@@ -175,7 +218,6 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
       if (token && userData && !isGuest) {
         const user = JSON.parse(userData);
         
-        // Format messages for database
         const messagesToSave = updatedMessages.map(msg => ({
           question: msg.role === 'user' ? msg.content : '',
           answer: msg.role === 'bot' ? msg.content : ''
@@ -262,6 +304,18 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
           </div>
 
           <div className="chat-input-area">
+            <select 
+              value={responseFormat} 
+              onChange={(e) => setResponseFormat(e.target.value)}
+              className="format-selector"
+              disabled={loading}
+            >
+              <option value="detailed">Detailed</option>
+              <option value="bullets">Bullet Points</option>
+              <option value="simple">Simple</option>
+              <option value="qa">Q&A</option>
+            </select>
+
             <input
               type="text"
               value={input}
