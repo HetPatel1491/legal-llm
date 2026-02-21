@@ -325,7 +325,37 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .chat-page-with-sidebar {
-    flex-direction: column;
+    display: flex;
+    position: relative;
+  }
+
+  .menu-btn {
+    display: block;
+    margin: 0 10px;
+  }
+  
+  /* Hide sidebar off-screen on mobile */
+  .chat-page-with-sidebar > :first-child {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    width: 70%;
+    height: 100vh;
+    background: white;
+    z-index: 999;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+  }
+  
+  /* Show sidebar when open */
+  .chat-page-with-sidebar.sidebar-open > :first-child {
+    left: 0;
+    z-index: 1000;
+  }
+  
+  .chat-page {
+    flex: 1;
+    width: 100%;
   }
 
   .chat-header {
@@ -358,8 +388,35 @@
     padding: 10px 16px;
     font-size: 12px;
   }
+  
+  .format-selector {
+    padding: 8px;
+    font-size: 12px;
+  }
 }
- .disclaimer {
+
+/* Desktop - Hide menu button */
+@media (min-width: 769px) {
+  .menu-btn {
+    display: none;
+  }
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  color: #333;
+  transition: transform 0.2s;
+}
+
+.menu-btn:hover {
+  transform: scale(1.1);
+}
+
+.disclaimer {
   background: #fff3cd;
   border: 1px solid #ffc107;
   color: #333;
@@ -368,65 +425,6 @@
   font-size: 12px;
   text-align: center;
   margin-top: 16px;
-}
-.menu-btn {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 8px;
-  color: #333;
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .menu-btn {
-    display: block;
-    margin: 0 10px;
-  }
-  
-  .chat-page-with-sidebar {
-    display: flex;
-    position: relative;
-  }
-  
-  .chat-page-with-sidebar > div:first-child {
-    position: fixed;
-    left: -100%;
-    top: 0;
-    width: 70%;
-    height: 100vh;
-    background: white;
-    z-index: 999;
-    transition: left 0.3s ease;
-    overflow-y: auto;
-  }
-  
-  .chat-page-with-sidebar.sidebar-open > div:first-child {
-    left: 0;
-    z-index: 1000;
-  }
-  
-  .chat-page {
-    flex: 1;
-    width: 100%;
-  }
-
-  
-  .chat-page-with-sidebar {
-    position: relative;
-  }
-  
-  .chat-page-with-sidebar .Sidebar {
-    position: absolute;
-    left: -250px;
-    transition: left 0.3s;
-    z-index: 1000;
-  }
-  
-  .chat-page-with-sidebar.sidebar-open .Sidebar {
-    left: 0;
-  }
 }
 
 .format-selector {
