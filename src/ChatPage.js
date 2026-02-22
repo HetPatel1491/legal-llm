@@ -346,5 +346,5 @@ const handleSendMessage = async () => {
     </div>
   );
 }
-
+}
 export default ChatPage;
