@@ -112,18 +112,25 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
   const updatedConversations = conversations.filter(c => c.id !== id);
   setConversations(updatedConversations);
   
-  // Save updated conversations to localStorage
-  if (updatedConversations.length > 0) {
-    localStorage.setItem('conversations', JSON.stringify(updatedConversations));
-  } else {
-    localStorage.removeItem('conversations');
-  }
+  // Save updated conversations to localStorage immediately
+  localStorage.setItem('conversations', JSON.stringify(updatedConversations));
   
   if (currentConversationId === id) {
     if (updatedConversations.length > 0) {
       selectConversation(updatedConversations[0].id);
     } else {
-      createNewConversation();
+      // Only create new if no conversations left
+      const newId = Date.now().toString();
+      const newConversation = {
+        id: newId,
+        messages: [],
+        createdAt: new Date().toISOString(),
+      };
+      setConversations([newConversation]);
+      setCurrentConversationId(newId);
+      setMessages([]);
+      setQuestionCount(0);
+      localStorage.setItem('conversations', JSON.stringify([newConversation]));
     }
   }
 };

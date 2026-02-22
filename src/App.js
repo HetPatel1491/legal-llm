@@ -59,8 +59,10 @@ function App() {
     const deviceId = getOrCreateDeviceId();
     setIsGuest(true);
     setUser(null);
-    // Initialize guest question counter for this device
-    localStorage.setItem(`guest_questions_${deviceId}`, '0');
+    // Only initialize if not already set
+    if (!localStorage.getItem('guest_questions_${deviceId}')){
+      localStorage.setItem('guest_questions_${deviceId}', '0');
+    }
     setCurrentPage('chat');
   };
 
@@ -140,5 +142,5 @@ function App() {
     </div>
   );
 }
-
+``
 export default App;
