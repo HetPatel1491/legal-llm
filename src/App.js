@@ -5,6 +5,16 @@ import SigninPage from './SigninPage';
 import SignupPage from './SignupPage';
 import './App.css';
 
+// Generate unique device ID
+const getOrCreateDeviceId = () => {
+  let deviceId = localStorage.getItem('device_id');
+  if (!deviceId) {
+    deviceId = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('device_id', deviceId);
+  }
+  return deviceId;
+};
+
 function App() {
   const [currentPage, setCurrentPage] = useState('landing');
   const [isGuest, setIsGuest] = useState(false);
@@ -13,6 +23,9 @@ function App() {
 
   // Check if user is logged in on page load
   useEffect(() => {
+    // Create device ID
+    const deviceId = getOrCreateDeviceId();
+    
     const token = localStorage.getItem('access_token');
     const userData = localStorage.getItem('user');
     const lastPage = localStorage.getItem('lastPage');
@@ -43,35 +56,40 @@ function App() {
   }, [currentPage]);
 
   const handleGuestStart = () => {
+    const deviceId = getOrCreateDeviceId();
     setIsGuest(true);
     setUser(null);
-    localStorage.removeItem('conversations');
+    // Initialize guest question counter for this device
+    localStorage.setItem(`guest_questions_${deviceId}`, '0');
     setCurrentPage('chat');
   };
 
   const handleSigninSuccess = (userData) => {
     setUser(userData);
     setIsGuest(false);
-    // Don't clear conversations - keep them!
+    // Clear device-based guest counter when signing in
+    const deviceId = localStorage.getItem('device_id');
+    localStorage.removeItem(`guest_questions_${deviceId}`);
     setCurrentPage('chat');
   };
 
   const handleSignupSuccess = (userData) => {
     setUser(userData);
     setIsGuest(false);
-    // Don't clear conversations - keep them!
+    // Clear device-based guest counter when signing up
+    const deviceId = localStorage.getItem('device_id');
+    localStorage.removeItem(`guest_questions_${deviceId}`);
     setCurrentPage('chat');
   };
 
   const handleBackToHome = () => {
-  // DON'T remove conversations - keep them!
-  // localStorage.removeItem('conversations');  // ← COMMENT THIS OUT
-  setCurrentPage('landing');
-  setUser(null);
-  setIsGuest(false);
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('user');
-};
+    localStorage.removeItem('conversations');
+    setCurrentPage('landing');
+    setUser(null);
+    setIsGuest(false);
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user');
+  };
 
   const handleGoToSignin = () => {
     setCurrentPage('signin');

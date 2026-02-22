@@ -56,9 +56,12 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
         loadFromLocalStorage();
       }
     } else {
-      // Guest user - load from localStorage
-      loadFromLocalStorage();
-    }
+      // Guest user - load from localStorage AND load question count from device
+  const deviceId = localStorage.getItem('device_id');
+  const savedQuestionCount = parseInt(localStorage.getItem(`guest_questions_${deviceId}`) || '0');
+  setQuestionCount(savedQuestionCount);
+  
+  loadFromLocalStorage();
   };
 
   const loadFromLocalStorage = () => {
@@ -166,90 +169,96 @@ Keep it professional and accurate.`
     return prompts[responseFormat] || prompts.detailed;
   };
 
-  const handleSendMessage = async () => {
-    if (!input.trim()) return;
+const handleSendMessage = async () => {
+  if (!input.trim()) return;
 
-    if (isGuest && questionCount >= 5) {
-      alert('You have reached the 5 question limit for guests. Please sign up to continue!');
-      return;
+  // Check guest question limit
+  if (isGuest && questionCount >= 5) {
+    alert('You have reached the 5 question limit on this device. Please sign in or sign up to continue asking questions!');
+    return;
+  }
+
+  const userQuestion = input;
+  const userMessage = { role: 'user', content: userQuestion };
+  const newMessages = [...messages, userMessage];
+  setMessages(newMessages);
+  saveMessagesToConversation(newMessages);
+  setInput('');
+  setLoading(true);
+
+  // Increment question count for guests
+  if (isGuest) {
+    const deviceId = localStorage.getItem('device_id');
+    const currentCount = parseInt(localStorage.getItem(`guest_questions_${deviceId}`) || '0');
+    const newCount = currentCount + 1;
+    localStorage.setItem(`guest_questions_${deviceId}`, newCount);
+    setQuestionCount(newCount);
+  }
+
+  try {
+    const response = await fetch('https://legal-llm-backend-production.up.railway.app/ask', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        question: userQuestion,
+        format: responseFormat
+      }),
+    });
+
+    const data = await response.json();
+
+    let botMessage;
+    if (data.success) {
+      botMessage = { role: 'bot', content: data.answer };
+    } else {
+      botMessage = { role: 'bot', content: `Error: ${data.error}` };
     }
 
-    const userQuestion = input;
-    const userMessage = { role: 'user', content: userQuestion };
-    const newMessages = [...messages, userMessage];
-    setMessages(newMessages);
-    saveMessagesToConversation(newMessages);
-    setInput('');
-    setLoading(true);
+    const updatedMessages = [...newMessages, botMessage];
+    setMessages(updatedMessages);
+    saveMessagesToConversation(updatedMessages);
 
-    if (isGuest) {
-      setQuestionCount(questionCount + 1);
-    }
-
-    try {
-      const response = await fetch('https://legal-llm-backend-production.up.railway.app/ask', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          question: userQuestion,
-          format: responseFormat
-        }),
-      });
-
-      const data = await response.json();
-
-      let botMessage;
-      if (data.success) {
-        botMessage = { role: 'bot', content: data.answer };
-      } else {
-        botMessage = { role: 'bot', content: `Error: ${data.error}` };
-      }
-
-      const updatedMessages = [...newMessages, botMessage];
-      setMessages(updatedMessages);
-      saveMessagesToConversation(updatedMessages);
-
-      // Save to database if user is logged in (not guest)
-      const token = localStorage.getItem('access_token');
-      const userData = localStorage.getItem('user');
+    // Save to database if user is logged in (not guest)
+    const token = localStorage.getItem('access_token');
+    const userData = localStorage.getItem('user');
+    
+    if (token && userData && !isGuest) {
+      const user = JSON.parse(userData);
       
-      if (token && userData && !isGuest) {
-        const user = JSON.parse(userData);
-        
-        const messagesToSave = updatedMessages.map(msg => ({
-          question: msg.role === 'user' ? msg.content : '',
-          answer: msg.role === 'bot' ? msg.content : ''
-        }));
+      const messagesToSave = updatedMessages.map(msg => ({
+        question: msg.role === 'user' ? msg.content : '',
+        answer: msg.role === 'bot' ? msg.content : ''
+      }));
 
-        try {
-          await fetch('https://legal-llm-backend-production.up.railway.app/conversations/save', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              conversation_id: currentConversationId,
-              messages: messagesToSave,
-              title: userQuestion.substring(0, 50) || 'Untitled',
-              user_id: user.id
-            })
-          });
-        } catch (dbError) {
-          console.log('Note: Could not save to database, but chat saved locally');
-        }
+      try {
+        await fetch('https://legal-llm-backend-production.up.railway.app/conversations/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            conversation_id: currentConversationId,
+            messages: messagesToSave,
+            title: userQuestion.substring(0, 50) || 'Untitled',
+            user_id: user.id
+          })
+        });
+      } catch (dbError) {
+        console.log('Note: Could not save to database, but chat saved locally');
       }
-
-    } catch (error) {
-      const botMessage = { role: 'bot', content: `Error: ${error.message}` };
-      const updatedMessages = [...newMessages, botMessage];
-      setMessages(updatedMessages);
-      saveMessagesToConversation(updatedMessages);
     }
 
-    setLoading(false);
-  };
+  } catch (error) {
+    const botMessage = { role: 'bot', content: `Error: ${error.message}` };
+    const updatedMessages = [...newMessages, botMessage];
+    setMessages(updatedMessages);
+    saveMessagesToConversation(updatedMessages);
+  }
+
+  setLoading(false);
+};
 
   return (
     <div className={`chat-page-with-sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
