@@ -109,17 +109,24 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
   };
 
   const deleteConversation = (id) => {
-    const updatedConversations = conversations.filter(c => c.id !== id);
-    setConversations(updatedConversations);
-    
-    if (currentConversationId === id) {
-      if (updatedConversations.length > 0) {
-        selectConversation(updatedConversations[0].id);
-      } else {
-        createNewConversation();
-      }
+  const updatedConversations = conversations.filter(c => c.id !== id);
+  setConversations(updatedConversations);
+  
+  // Save updated conversations to localStorage
+  if (updatedConversations.length > 0) {
+    localStorage.setItem('conversations', JSON.stringify(updatedConversations));
+  } else {
+    localStorage.removeItem('conversations');
+  }
+  
+  if (currentConversationId === id) {
+    if (updatedConversations.length > 0) {
+      selectConversation(updatedConversations[0].id);
+    } else {
+      createNewConversation();
     }
-  };
+  }
+};
 
   const saveMessagesToConversation = (newMessages) => {
     setConversations(

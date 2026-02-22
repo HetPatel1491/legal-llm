@@ -43,6 +43,7 @@ function Sidebar({
                 className="delete-btn"
                 onClick={(e) => {
                   e.stopPropagation();
+                  if (window.confirm('Are you sure you want to delete this conversation?'))
                   onDeleteConversation(conv.id);
                 }}
               >
