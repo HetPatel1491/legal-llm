@@ -60,8 +60,8 @@ function App() {
     setIsGuest(true);
     setUser(null);
     // Only initialize if not already set
-    if (!localStorage.getItem('guest_questions_${deviceId}')){
-      localStorage.setItem('guest_questions_${deviceId}', '0');
+    if (!localStorage.getItem(`guest_questions_${deviceId}`)) {
+      localStorage.setItem(`guest_questions_${deviceId}`, '0');
     }
     setCurrentPage('chat');
   };
@@ -142,5 +142,5 @@ function App() {
     </div>
   );
 }
-``
+
 export default App;
