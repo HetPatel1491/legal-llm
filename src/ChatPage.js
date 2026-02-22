@@ -62,6 +62,7 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
   setQuestionCount(savedQuestionCount);
   
   loadFromLocalStorage();
+    }
   };
 
   const loadFromLocalStorage = () => {
@@ -346,5 +347,5 @@ const handleSendMessage = async () => {
     </div>
   );
 }
-}
+
 export default ChatPage;
