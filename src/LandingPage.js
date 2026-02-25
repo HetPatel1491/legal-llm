@@ -3,38 +3,59 @@ import './LandingPage.css';
 
 function LandingPage({ onSignIn, onSignUp, onGuest }) {
   return (
-    <div className="landing-container">
-      {/* Background gradient */}
-      <div className="landing-background"></div>
+    <div className="landing-page">
+      {/* Navbar */}
+      <div className="navbar">
+        <div className="navbar-logo">⚖️ Legal AI</div>
+        <div className="navbar-buttons">
+          <button className="btn-secondary" onClick={onSignIn}>
+            Sign In
+          </button>
+          <button className="btn-primary" onClick={onSignUp}>
+            Sign Up
+          </button>
+        </div>
+      </div>
 
-      {/* Content */}
-      <div className="landing-content">
-        {/* Header */}
-        <div className="landing-header">
-          <h1>⚖️ Legal AI</h1>
-          <p>Your AI Legal Assistant</p>
-          <p className="subtitle">Get instant answers to your legal questions</p>
+      {/* Hero Section */}
+      <div className="hero">
+        <h1>Your AI Legal Assistant</h1>
+        <p>Get instant answers to your legal questions</p>
+        
+        {/* Features Grid */}
+        <div className="features">
+          <div className="feature">
+            <div className="feature-icon">⚡</div>
+            <h3>Instant Answers</h3>
+            <p>Get legal information in seconds</p>
+          </div>
+          <div className="feature">
+            <div className="feature-icon">🔒</div>
+            <h3>Private & Secure</h3>
+            <p>Your data is protected</p>
+          </div>
+          <div className="feature">
+            <div className="feature-icon">💚</div>
+            <h3>Free Forever</h3>
+            <p>Legal assistance for everyone</p>
+          </div>
         </div>
 
         {/* Buttons */}
-        <div className="landing-buttons">
-          <button className="btn btn-primary" onClick={onSignIn}>
-            Sign In
+        <div className="button-group">
+          <button className="btn-primary" onClick={onSignUp}>
+            Create Account
           </button>
-          
-          <button className="btn btn-secondary" onClick={onSignUp}>
-            Sign Up
-          </button>
-          
-          <button className="btn btn-guest" onClick={onGuest}>
+          <button className="btn-secondary" onClick={onGuest}>
             Continue as Guest
           </button>
         </div>
+      </div>
 
-        {/* Footer */}
-        <div className="landing-footer">
-          <p>Help people understand law. Free legal assistance for everyone.</p>
-        </div>
+      {/* Footer */}
+      <div className="footer">
+        <p>Help people understand law. Free legal assistance for everyone.</p>
+        <p>© 2026 Legal AI. All rights reserved.</p>
       </div>
     </div>
   );
