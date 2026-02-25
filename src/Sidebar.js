@@ -61,12 +61,20 @@ function Sidebar({
           .then(data => {
             if (data.success) {
               console.log('Deleted from database');
+              // ONLY delete from UI AFTER database confirms
+              onDeleteConversation(conv.id);
+            } else {
+              alert('Failed to delete. Please try again.');
             }
           })
-          .catch(err => console.log('Delete error:', err));
+          .catch(err => {
+            console.log('Delete error:', err);
+            alert('Error deleting conversation');
+          });
+      } else {
+        // If not logged in, just delete locally
+        onDeleteConversation(conv.id);
       }
-      
-      onDeleteConversation(conv.id);
     }
   }}
 >
