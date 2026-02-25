@@ -18,7 +18,6 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
   };
 
   // Load conversations on mount
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     loadConversations();
   }, []);
@@ -57,11 +56,11 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
       }
     } else {
       // Guest user - load from localStorage AND load question count from device
-  const deviceId = localStorage.getItem('device_id');
-  const savedQuestionCount = parseInt(localStorage.getItem(`guest_questions_${deviceId}`) || '0');
-  setQuestionCount(savedQuestionCount);
-  
-  loadFromLocalStorage();
+      const deviceId = localStorage.getItem('device_id');
+      const savedQuestionCount = parseInt(localStorage.getItem(`guest_questions_${deviceId}`) || '0');
+      setQuestionCount(savedQuestionCount);
+      
+      loadFromLocalStorage();
     }
   };
 
@@ -109,31 +108,31 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
   };
 
   const deleteConversation = (id) => {
-  const updatedConversations = conversations.filter(c => c.id !== id);
-  setConversations(updatedConversations);
-  
-  // Save updated conversations to localStorage immediately
-  localStorage.setItem('conversations', JSON.stringify(updatedConversations));
-  
-  if (currentConversationId === id) {
-    if (updatedConversations.length > 0) {
-      selectConversation(updatedConversations[0].id);
-    } else {
-      // Only create new if no conversations left
-      const newId = Date.now().toString();
-      const newConversation = {
-        id: newId,
-        messages: [],
-        createdAt: new Date().toISOString(),
-      };
-      setConversations([newConversation]);
-      setCurrentConversationId(newId);
-      setMessages([]);
-      setQuestionCount(0);
-      localStorage.setItem('conversations', JSON.stringify([newConversation]));
+    const updatedConversations = conversations.filter(c => c.id !== id);
+    setConversations(updatedConversations);
+    
+    // Save updated conversations to localStorage immediately
+    localStorage.setItem('conversations', JSON.stringify(updatedConversations));
+    
+    if (currentConversationId === id) {
+      if (updatedConversations.length > 0) {
+        selectConversation(updatedConversations[0].id);
+      } else {
+        // Only create new if no conversations left
+        const newId = Date.now().toString();
+        const newConversation = {
+          id: newId,
+          messages: [],
+          createdAt: new Date().toISOString(),
+        };
+        setConversations([newConversation]);
+        setCurrentConversationId(newId);
+        setMessages([]);
+        setQuestionCount(0);
+        localStorage.setItem('conversations', JSON.stringify([newConversation]));
+      }
     }
-  }
-};
+  };
 
   const saveMessagesToConversation = (newMessages) => {
     setConversations(
@@ -145,135 +144,96 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
     );
   };
 
-  const getSystemPrompt = () => {
-    const prompts = {
-      detailed: `You are an expert legal assistant. ALWAYS format your answers professionally and clearly:
+  const handleSendMessage = async () => {
+    if (!input.trim()) return;
 
-**Introduction:** Start with 1-2 sentences explaining the concept briefly.
-
-**Main Definition & Explanation:** Provide 2-3 detailed paragraphs with comprehensive information.
-
-**Types/Categories:** If applicable, list different types using bullet points (•).
-
-**Key Elements or Features:** Use bullet points for main characteristics, requirements, or components.
-
-**Examples:** Provide practical real-world examples in 1-2 paragraphs.
-
-**Important Notes:** Add any important disclaimers, variations by jurisdiction, or special considerations.
-
-Be accurate, helpful, and practical in your legal explanations.`,
-
-      bullets: `You are a legal assistant. Answer the question ONLY using bullet points. Each bullet should be concise and clear. Include:
-- Key definition
-- Main points (3-5 bullets)
-- Important notes
-
-Keep it brief and scannable.`,
-
-      simple: `You are a legal assistant. Answer the question in ONE paragraph only (3-4 sentences). Be concise and clear. Skip examples and detailed explanations. Just the essential information.`,
-
-      qa: `You are a legal assistant. Format your answer as Q&A:
-
-Q: [Restate the user's question]
-
-A: [Provide a clear, comprehensive answer in 2-3 paragraphs]
-
-Keep it professional and accurate.`
-    };
-
-    return prompts[responseFormat] || prompts.detailed;
-  };
-
-const handleSendMessage = async () => {
-  if (!input.trim()) return;
-
-  // Check guest question limit
-  if (isGuest && questionCount >= 5) {
-    alert('You have reached the 5 question limit on this device. Please sign in or sign up to continue asking questions!');
-    return;
-  }
-
-  const userQuestion = input;
-  const userMessage = { role: 'user', content: userQuestion };
-  const newMessages = [...messages, userMessage];
-  setMessages(newMessages);
-  saveMessagesToConversation(newMessages);
-  setInput('');
-  setLoading(true);
-
-  // Increment question count for guests
-  if (isGuest) {
-    const deviceId = localStorage.getItem('device_id');
-    const currentCount = parseInt(localStorage.getItem(`guest_questions_${deviceId}`) || '0');
-    const newCount = currentCount + 1;
-    localStorage.setItem(`guest_questions_${deviceId}`, newCount);
-    setQuestionCount(newCount);
-  }
-
-  try {
-    const response = await fetch('https://legal-llm-backend-production.up.railway.app/ask', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ 
-        question: userQuestion,
-        format: responseFormat
-      }),
-    });
-
-    const data = await response.json();
-
-    let botMessage;
-    if (data.success) {
-      botMessage = { role: 'bot', content: data.answer };
-    } else {
-      botMessage = { role: 'bot', content: `Error: ${data.error}` };
+    // Check guest question limit
+    if (isGuest && questionCount >= 5) {
+      alert('You have reached the 5 question limit on this device. Please sign in or sign up to continue asking questions!');
+      return;
     }
 
-    const updatedMessages = [...newMessages, botMessage];
-    setMessages(updatedMessages);
-    saveMessagesToConversation(updatedMessages);
+    const userQuestion = input;
+    const userMessage = { role: 'user', content: userQuestion };
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+    saveMessagesToConversation(newMessages);
+    setInput('');
+    setLoading(true);
 
-    // Save to database if user is logged in (not guest)
-    const token = localStorage.getItem('access_token');
-    const userData = localStorage.getItem('user');
-    
-    if (token && userData && !isGuest) {
-      const user = JSON.parse(userData);
-      
-      const messagesToSave = updatedMessages.map(msg => ({
-        question: msg.role === 'user' ? msg.content : '',
-        answer: msg.role === 'bot' ? msg.content : ''
-      }));
+    // Increment question count for guests
+    if (isGuest) {
+      const deviceId = localStorage.getItem('device_id');
+      const currentCount = parseInt(localStorage.getItem(`guest_questions_${deviceId}`) || '0');
+      const newCount = currentCount + 1;
+      localStorage.setItem(`guest_questions_${deviceId}`, newCount);
+      setQuestionCount(newCount);
+    }
 
-      try {
-        await fetch('https://legal-llm-backend-production.up.railway.app/conversations/save', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            conversation_id: currentConversationId,
-            messages: messagesToSave,
-            title: userQuestion.substring(0, 50) || 'Untitled',
-            user_id: user.id
-          })
-        });
-      } catch (dbError) {
-        console.log('Note: Could not save to database, but chat saved locally');
+    try {
+      const response = await fetch('https://legal-llm-backend-production.up.railway.app/ask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          question: userQuestion,
+          format: responseFormat
+        }),
+      });
+
+      const data = await response.json();
+
+      let botMessage;
+      if (data.success) {
+        botMessage = { role: 'bot', content: data.answer };
+      } else {
+        botMessage = { role: 'bot', content: `Error: ${data.error}` };
       }
+
+      const updatedMessages = [...newMessages, botMessage];
+      setMessages(updatedMessages);
+      saveMessagesToConversation(updatedMessages);
+
+      // Save to database if user is logged in (not guest)
+      const token = localStorage.getItem('access_token');
+      const userData = localStorage.getItem('user');
+      
+      if (token && userData && !isGuest) {
+        const user = JSON.parse(userData);
+        
+        const messagesToSave = updatedMessages.map(msg => ({
+          question: msg.role === 'user' ? msg.content : '',
+          answer: msg.role === 'bot' ? msg.content : ''
+        }));
+
+        try {
+          await fetch('https://legal-llm-backend-production.up.railway.app/conversations/save', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              conversation_id: currentConversationId,
+              messages: messagesToSave,
+              title: userQuestion.substring(0, 50) || 'Untitled',
+              user_id: user.id
+            })
+          });
+        } catch (dbError) {
+          console.log('Note: Could not save to database, but chat saved locally');
+        }
+      }
+
+    } catch (error) {
+      const botMessage = { role: 'bot', content: `Error: ${error.message}` };
+      const updatedMessages = [...newMessages, botMessage];
+      setMessages(updatedMessages);
+      saveMessagesToConversation(updatedMessages);
     }
 
-  } catch (error) {
-    const botMessage = { role: 'bot', content: `Error: ${error.message}` };
-    const updatedMessages = [...newMessages, botMessage];
-    setMessages(updatedMessages);
-    saveMessagesToConversation(updatedMessages);
-  }
-
-  setLoading(false);
-};
+    setLoading(false);
+  };
 
   return (
     <div className={`chat-page-with-sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
