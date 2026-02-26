@@ -18,14 +18,14 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
   };
 
   // Auto-scroll to bottom when messages update
-useEffect(() => {
-  const chatMessages = document.querySelector('.chat-messages');
-  if (chatMessages) {
-    setTimeout(() => {
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }, 0);
-  }
-}, [messages]);
+  useEffect(() => {
+    const chatMessages = document.querySelector('.chat-messages');
+    if (chatMessages) {
+      setTimeout(() => {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }, 0);
+    }
+  }, [messages]);
 
   // Load conversations on mount
   useEffect(() => {
@@ -39,41 +39,41 @@ useEffect(() => {
     }
   }, [conversations]);
 
-const loadConversations = async () => {
-  const token = localStorage.getItem('access_token');
-  const userData = localStorage.getItem('user');
-  const isGuestMode = isGuest; // Use current isGuest state
+  const loadConversations = async () => {
+    const token = localStorage.getItem('access_token');
+    const userData = localStorage.getItem('user');
+    const isGuestMode = isGuest;
 
-  if (token && userData && !isGuestMode) {
-    // User is logged in - load from database
-    const user = JSON.parse(userData);
-    try {
-      const response = await fetch(
-        `https://legal-llm-backend-production.up.railway.app/conversations/${user.id}`
-      );
-      const data = await response.json();
+    if (token && userData && !isGuestMode) {
+      // User is logged in - load from database
+      const user = JSON.parse(userData);
+      try {
+        const response = await fetch(
+          `https://legal-llm-backend-production.up.railway.app/conversations/${user.id}`
+        );
+        const data = await response.json();
 
-      if (data.success && data.conversations.length > 0) {
-        setConversations(data.conversations);
-        const mostRecent = data.conversations[0];
-        setCurrentConversationId(mostRecent.id);
-        setMessages(mostRecent.messages);
-      } else {
-        createNewConversation();
+        if (data.success && data.conversations.length > 0) {
+          setConversations(data.conversations);
+          const mostRecent = data.conversations[0];
+          setCurrentConversationId(mostRecent.id);
+          setMessages(mostRecent.messages);
+        } else {
+          createNewConversation();
+        }
+      } catch (error) {
+        console.log('Could not load from database, using localStorage');
+        loadFromLocalStorage();
       }
-    } catch (error) {
-      console.log('Could not load from database, using localStorage');
+    } else {
+      // Guest user - load from localStorage
+      const deviceId = localStorage.getItem('device_id');
+      const savedQuestionCount = parseInt(localStorage.getItem(`guest_questions_${deviceId}`) || '0');
+      setQuestionCount(savedQuestionCount);
+      
       loadFromLocalStorage();
     }
-  } else {
-    // Guest user - load from localStorage
-    const deviceId = localStorage.getItem('device_id');
-    const savedQuestionCount = parseInt(localStorage.getItem(`guest_questions_${deviceId}`) || '0');
-    setQuestionCount(savedQuestionCount);
-    
-    loadFromLocalStorage();
-  }
-};
+  };
 
   const loadFromLocalStorage = () => {
     const savedConversations = localStorage.getItem('conversations');
@@ -122,14 +122,12 @@ const loadConversations = async () => {
     const updatedConversations = conversations.filter(c => c.id !== id);
     setConversations(updatedConversations);
     
-    // Save updated conversations to localStorage immediately
     localStorage.setItem('conversations', JSON.stringify(updatedConversations));
     
     if (currentConversationId === id) {
       if (updatedConversations.length > 0) {
         selectConversation(updatedConversations[0].id);
       } else {
-        // Only create new if no conversations left
         const newId = Date.now().toString();
         const newConversation = {
           id: newId,
@@ -182,6 +180,11 @@ const loadConversations = async () => {
     }
 
     try {
+      // Create empty bot message placeholder
+      let botMessage = { role: 'bot', content: '' };
+      let updatedMessages = [...newMessages, botMessage];
+      setMessages(updatedMessages);
+
       const response = await fetch('https://legal-llm-backend-production.up.railway.app/ask', {
         method: 'POST',
         headers: {
@@ -195,14 +198,13 @@ const loadConversations = async () => {
 
       const data = await response.json();
 
-      let botMessage;
       if (data.success) {
         botMessage = { role: 'bot', content: data.answer };
       } else {
         botMessage = { role: 'bot', content: `Error: ${data.error}` };
       }
 
-      const updatedMessages = [...newMessages, botMessage];
+      updatedMessages = [...newMessages, botMessage];
       setMessages(updatedMessages);
       saveMessagesToConversation(updatedMessages);
 
