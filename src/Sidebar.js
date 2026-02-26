@@ -6,10 +6,16 @@ function Sidebar({
   currentConversationId, 
   onSelectConversation, 
   onNewConversation, 
-  onDeleteConversation 
+  onDeleteConversation,
+  onCloseSidebar
 }) {
   return (
     <div className="sidebar">
+      {/* Close button for mobile */}
+      <button className="sidebar-close" onClick={onCloseSidebar}>
+        ✕
+      </button>
+
       {/* Header */}
       <div className="sidebar-header">
         <h2>⚖️ Legal LLM</h2>
@@ -39,18 +45,17 @@ function Sidebar({
                   {new Date(conv.createdAt).toLocaleDateString()}
                 </p>
               </div>
-             <button
-  className="delete-btn"
-  onClick={(e) => {
-    e.stopPropagation();
-    if (window.confirm('Are you sure you want to delete this conversation?')) {
-      // Just delete from UI and localStorage - don't call database
-      onDeleteConversation(conv.id);
-    }
-  }}
->
-  ✕
-</button>
+              <button
+                className="delete-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (window.confirm('Are you sure you want to delete this conversation?')) {
+                    onDeleteConversation(conv.id);
+                  }
+                }}
+              >
+                ✕
+              </button>
             </div>
           ))
         )}

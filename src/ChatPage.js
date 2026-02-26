@@ -29,40 +29,41 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
     }
   }, [conversations]);
 
-  const loadConversations = async () => {
-    const token = localStorage.getItem('access_token');
-    const userData = localStorage.getItem('user');
+const loadConversations = async () => {
+  const token = localStorage.getItem('access_token');
+  const userData = localStorage.getItem('user');
+  const isGuestMode = isGuest; // Use current isGuest state
 
-    if (token && userData && !isGuest) {
-      // User is logged in - load from database
-      const user = JSON.parse(userData);
-      try {
-        const response = await fetch(
-          `https://legal-llm-backend-production.up.railway.app/conversations/${user.id}`
-        );
-        const data = await response.json();
+  if (token && userData && !isGuestMode) {
+    // User is logged in - load from database
+    const user = JSON.parse(userData);
+    try {
+      const response = await fetch(
+        `https://legal-llm-backend-production.up.railway.app/conversations/${user.id}`
+      );
+      const data = await response.json();
 
-        if (data.success && data.conversations.length > 0) {
-          setConversations(data.conversations);
-          const mostRecent = data.conversations[0];
-          setCurrentConversationId(mostRecent.id);
-          setMessages(mostRecent.messages);
-        } else {
-          createNewConversation();
-        }
-      } catch (error) {
-        console.log('Could not load from database, using localStorage');
-        loadFromLocalStorage();
+      if (data.success && data.conversations.length > 0) {
+        setConversations(data.conversations);
+        const mostRecent = data.conversations[0];
+        setCurrentConversationId(mostRecent.id);
+        setMessages(mostRecent.messages);
+      } else {
+        createNewConversation();
       }
-    } else {
-      // Guest user - load from localStorage AND load question count from device
-      const deviceId = localStorage.getItem('device_id');
-      const savedQuestionCount = parseInt(localStorage.getItem(`guest_questions_${deviceId}`) || '0');
-      setQuestionCount(savedQuestionCount);
-      
+    } catch (error) {
+      console.log('Could not load from database, using localStorage');
       loadFromLocalStorage();
     }
-  };
+  } else {
+    // Guest user - load from localStorage
+    const deviceId = localStorage.getItem('device_id');
+    const savedQuestionCount = parseInt(localStorage.getItem(`guest_questions_${deviceId}`) || '0');
+    setQuestionCount(savedQuestionCount);
+    
+    loadFromLocalStorage();
+  }
+};
 
   const loadFromLocalStorage = () => {
     const savedConversations = localStorage.getItem('conversations');
@@ -243,6 +244,7 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
         onSelectConversation={selectConversation}
         onNewConversation={createNewConversation}
         onDeleteConversation={deleteConversation}
+        onCloseSidebar={() => setSidebarOpen(false)}
       />
 
       <div className="chat-page">

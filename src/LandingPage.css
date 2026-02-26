@@ -70,17 +70,17 @@
 /* Feature Grid */
 .features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 24px;
-  margin-bottom: 60px;
-  padding: 40px;
-  background: #1a1a1a;
-  border-radius: 16px;
-  border: 1px solid #333;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 30px 0;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  border: none;
 }
 
 .feature {
-  padding: 24px;
+  padding: 16px;
   background: #2a2a2a;
   border-radius: 12px;
   border: 1px solid #333;
@@ -90,24 +90,24 @@
 .feature:hover {
   background: #333;
   border-color: #667eea;
-  transform: translateY(-4px);
+  transform: translateY(-2px);
 }
 
 .feature-icon {
-  font-size: 40px;
-  margin-bottom: 12px;
+  font-size: 32px;
+  margin-bottom: 8px;
 }
 
 .feature h3 {
-  font-size: 18px;
-  margin-bottom: 8px;
+  font-size: 16px;
+  margin-bottom: 6px;
   color: #fff;
 }
 
 .feature p {
-  font-size: 14px;
+  font-size: 13px;
   color: #aaa;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 /* Buttons Container */
