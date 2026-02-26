@@ -17,6 +17,16 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
     setSidebarOpen(!sidebarOpen);
   };
 
+  // Auto-scroll to bottom when messages update
+useEffect(() => {
+  const chatMessages = document.querySelector('.chat-messages');
+  if (chatMessages) {
+    setTimeout(() => {
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 0);
+  }
+}, [messages]);
+
   // Load conversations on mount
   useEffect(() => {
     loadConversations();
