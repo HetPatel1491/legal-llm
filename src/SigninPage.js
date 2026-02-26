@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import './AuthPage.css';
-import './SignInPage.css';
 
 function SigninPage({ onBackToHome, onGoToSignup, onSigninSuccess }) {
   const [formData, setFormData] = useState({
