@@ -29,21 +29,27 @@ function App() {
     const token = localStorage.getItem('access_token');
     const userData = localStorage.getItem('user');
     const lastPage = localStorage.getItem('lastPage');
+    const wasGuest = localStorage.getItem('isGuest') === 'true';
     
     if (token && userData) {
       // User is logged in
       setUser(JSON.parse(userData));
       setIsGuest(false);
+      localStorage.removeItem('isGuest');
       
       // If they were in chat before reload, stay in chat
       if (lastPage === 'chat') {
         setCurrentPage('chat');
       } else {
-        // Otherwise go to landing
         setCurrentPage('landing');
       }
+    } else if (wasGuest && lastPage === 'chat') {
+      // Guest user was in chat - stay in chat
+      setIsGuest(true);
+      setUser(null);
+      setCurrentPage('chat');
     } else {
-      // Not logged in - always go to landing
+      // Not logged in - go to landing
       setCurrentPage('landing');
     }
     
@@ -57,6 +63,7 @@ function App() {
 
   const handleGuestStart = () => {
     const deviceId = getOrCreateDeviceId();
+    localStorage.setItem('isGuest', 'true');
     setIsGuest(true);
     setUser(null);
     // Only initialize if not already set
@@ -86,11 +93,12 @@ function App() {
 
   const handleBackToHome = () => {
     localStorage.removeItem('conversations');
+    localStorage.removeItem('isGuest');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user');
     setCurrentPage('landing');
     setUser(null);
     setIsGuest(false);
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user');
   };
 
   const handleGoToSignin = () => {
