@@ -1,13 +1,13 @@
 /* Sidebar.css - Modern Design */
 
 .sidebar {
-  width: 280px;
-  background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
-  border-right: 1px solid #333;
+   width: 280px;
+  background: #f9fafb;
+  border-right: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
   height: 100vh;
-  color: white;
+  color: #0d0d0d;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
 }
 
@@ -20,7 +20,7 @@
 .sidebar-header h2 {
   font-size: 20px;
   margin-bottom: 12px;
-  color: #fff;
+  color: #0d0d0d;
   font-weight: 700;
 }
 
@@ -87,17 +87,17 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px;
-  background: #2a2a2a;
+  background: #ffffff;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 1px solid transparent;
+  border: 1px solid #e5e7eb;
   gap: 8px;
 }
 
 .conversation-item:hover {
-  background: #333;
-  border-color: #444;
+  background: #f3f4f6;
+  border-color: #d1d5db;
 }
 
 .conversation-item.active {
@@ -112,7 +112,7 @@
 }
 
 .conversation-title {
-  color: #fff;
+  color: #0d0d0d;
   font-size: 13px;
   margin: 0;
   white-space: nowrap;
@@ -121,14 +121,14 @@
   font-weight: 500;
 }
 
-.conversation-item.active .conversation-title {
-  color: #fff;
-}
-
 .conversation-date {
-  color: #888;
+  color: #9ca3af;
   font-size: 11px;
   margin: 4px 0 0 0;
+}
+
+.conversation-item.active .conversation-title {
+  color: #fff;
 }
 
 .conversation-item.active .conversation-date {
@@ -139,7 +139,7 @@
 .delete-btn {
   background: transparent;
   border: none;
-  color: #999;
+  color: #d1d5db;
   cursor: pointer;
   font-size: 16px;
   padding: 4px 8px;
@@ -154,7 +154,7 @@
 
 .delete-btn:hover {
   background: rgba(255, 59, 48, 0.1);
-  color: #ff3b30;
+  color: #ef4444;
 }
 
 .delete-btn:active {
@@ -173,12 +173,12 @@
 /* Footer */
 .sidebar-footer {
   padding: 16px;
-  border-top: 1px solid #333;
+  border-top: 1px solid #e5e7eb;
   text-align: center;
 }
 
 .sidebar-footer p {
-  color: #888;
+  color: #9ca3af;
   font-size: 12px;
   margin: 0;
 }

@@ -1,4 +1,4 @@
-/* ChatPage.css - Modern Design */
+/* ChatPage.css - Light Grey Beautiful Design */
 
 * {
   margin: 0;
@@ -9,7 +9,7 @@
 .chat-page-with-sidebar {
   display: flex;
   height: 100vh;
-  background: #0f0f0f;
+  background: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
 }
 
@@ -17,7 +17,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+  background: #ffffff;
 }
 
 .chat-container {
@@ -36,22 +36,22 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 0;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #e5e7eb;
   gap: 15px;
   flex-wrap: wrap;
 }
 
 .chat-header h1 {
   font-size: 24px;
-  color: #fff;
+  color: #0d0d0d;
   font-weight: 700;
   letter-spacing: -0.5px;
 }
 
 .back-btn, .menu-btn {
   background: transparent;
-  border: 1px solid #444;
-  color: #fff;
+  border: 1px solid #d1d5db;
+  color: #374151;
   padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
@@ -61,8 +61,8 @@
 }
 
 .back-btn:hover, .menu-btn:hover {
-  background: #333;
-  border-color: #555;
+  background: #f3f4f6;
+  border-color: #9ca3af;
 }
 
 .menu-btn {
@@ -96,13 +96,13 @@
 
 .sign-in-btn {
   background: transparent;
-  border: 1px solid #444;
-  color: #fff;
+  border: 1px solid #d1d5db;
+  color: #0d0d0d;
 }
 
 .sign-in-btn:hover {
-  background: #333;
-  border-color: #555;
+  background: #f3f4f6;
+  border-color: #9ca3af;
 }
 
 .sign-up-btn {
@@ -136,12 +136,12 @@
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-  background: #444;
+  background: #d1d5db;
   border-radius: 4px;
 }
 
 .chat-messages::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #9ca3af;
 }
 
 /* Empty State */
@@ -151,19 +151,19 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #888;
+  color: #6b7280;
   text-align: center;
 }
 
 .empty-state h2 {
   font-size: 32px;
   margin-bottom: 10px;
-  color: #fff;
+  color: #0d0d0d;
 }
 
 .empty-state p {
   font-size: 16px;
-  color: #999;
+  color: #6b7280;
 }
 
 /* Messages */
@@ -207,19 +207,19 @@
 }
 
 .message.bot .message-content {
-  background: #2a2a2a;
-  color: #e0e0e0;
+  background: #f3f4f6;
+  color: #1f2937;
   border-radius: 4px 16px 16px 16px;
 }
 
 .message.bot .message-content a {
-  color: #667eea;
+  color: #0369a1;
   text-decoration: none;
 }
 
 .message.bot .message-content code {
-  background: #1a1a1a;
-  color: #58d4f1;
+  background: #e5e7eb;
+  color: #0369a1;
   padding: 2px 6px;
   border-radius: 4px;
   font-family: 'Monaco', 'Courier New', monospace;
@@ -227,8 +227,8 @@
 }
 
 .message.bot .message-content pre {
-  background: #1a1a1a;
-  color: #58d4f1;
+  background: #e5e7eb;
+  color: #0369a1;
   padding: 12px;
   border-radius: 8px;
   overflow-x: auto;
@@ -270,17 +270,17 @@
   display: flex;
   gap: 12px;
   padding: 16px;
-  background: #1a1a1a;
+  background: #f9fafb;
   border-radius: 12px;
-  border: 1px solid #333;
+  border: 1px solid #e5e7eb;
   margin-bottom: 20px;
 }
 
 .format-selector {
   padding: 10px 14px;
-  background: #2a2a2a;
-  border: 1px solid #444;
-  color: white;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #1f2937;
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
@@ -289,34 +289,35 @@
 }
 
 .format-selector:hover:not(:disabled) {
-  background: #333;
-  border-color: #555;
+  background: #f3f4f6;
+  border-color: #9ca3af;
 }
 
 .format-selector:focus {
   outline: none;
   border-color: #667eea;
+  background: #ffffff;
 }
 
 input[type="text"] {
   flex: 1;
   padding: 10px 14px;
-  background: #2a2a2a;
-  border: 1px solid #444;
-  color: white;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #1f2937;
   border-radius: 8px;
   font-size: 15px;
   transition: all 0.2s ease;
 }
 
 input[type="text"]::placeholder {
-  color: #777;
+  color: #9ca3af;
 }
 
 input[type="text"]:focus {
   outline: none;
   border-color: #667eea;
-  background: #333;
+  background: #ffffff;
 }
 
 input[type="text"]:disabled {
@@ -351,12 +352,12 @@ input[type="text"]:disabled {
 /* Disclaimer */
 .disclaimer {
   font-size: 12px;
-  color: #888;
+  color: #6b7280;
   text-align: center;
   padding: 12px;
-  background: #1a1a1a;
+  background: #f3f4f6;
   border-radius: 8px;
-  border: 1px solid #333;
+  border: 1px solid #e5e7eb;
   margin-bottom: 20px;
 }
 
