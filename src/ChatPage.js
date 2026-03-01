@@ -193,6 +193,7 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
           if (data.done) {
             // Streaming finished
             eventSource.close();
+            setLoading(false);
             
             // Final save to database if user is logged in
             const token = localStorage.getItem('access_token');
