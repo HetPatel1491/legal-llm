@@ -229,12 +229,14 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
             saveMessagesToConversation(updatedMessages);
           } else if (data.word) {
             // Stream word received
+            setTimeout(() => {
             fullAnswer += data.word;
             botMessage = { role: 'bot', content: fullAnswer };
             updatedMessages = [...newMessages, botMessage];
             setMessages(updatedMessages);
             saveMessagesToConversation(updatedMessages);
-          }
+          }, 50);
+        }
         } catch (error) {
           console.error('Error parsing SSE data:', error);
         }
