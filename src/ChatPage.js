@@ -252,11 +252,12 @@ const eventSource = new EventSource(url);
       eventSource.onerror = (error) => {
         console.error('SSE Error:', error);
         eventSource.close();
-        const botMessage = { role: 'bot', content: 'Error: Connection failed' };
+        setLoading(false);
+
+        const botMessage = { role: 'bot', content: 'Error: Connection failed. Please try again.' };
         const updatedMessages = [...newMessages, botMessage];
         setMessages(updatedMessages);
         saveMessagesToConversation(updatedMessages);
-        setLoading(false);
       };
 
     } catch (error) {
