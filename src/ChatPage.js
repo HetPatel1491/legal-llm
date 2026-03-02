@@ -181,91 +181,104 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
       let updatedMessages = [...newMessages, botMessage];
       setMessages(updatedMessages);
 
-      // Prepare conversation history to send to backend
-const conversationHistory = messages.map(msg => ({
-  role: msg.role,
-  content: msg.content
-}));
+      // Prepare conversation history
+      const conversationHistory = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
 
-const historyParam = encodeURIComponent(JSON.stringify(conversationHistory));
-const url = `https://legal-llm-backend-production.up.railway.app/ask?question=${encodeURIComponent(userQuestion)}&format=${responseFormat}&conversation_history=${historyParam}`;
-const eventSource = new EventSource(url);
+      // Send POST request with conversation history
+      const response = await fetch('https://legal-llm-backend-production.up.railway.app/ask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          question: userQuestion,
+          format: responseFormat,
+          conversation_history: conversationHistory
+        })
+      });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
       let fullAnswer = '';
 
-      eventSource.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
+      // Read streaming response
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
 
-          if (data.done) {
-            // Streaming finished
-            eventSource.close();
-            setLoading(false);
-            
-            // Final save to database if user is logged in
-            const token = localStorage.getItem('access_token');
-            const userData = localStorage.getItem('user');
-            
-            if (token && userData && !isGuest) {
-              const user = JSON.parse(userData);
-              
-              const messagesToSave = [...newMessages, { role: 'bot', content: fullAnswer }].map(msg => ({
-                question: msg.role === 'user' ? msg.content : '',
-                answer: msg.role === 'bot' ? msg.content : ''
-              }));
+        const text = decoder.decode(value);
+        const lines = text.split('\n');
 
-              fetch('https://legal-llm-backend-production.up.railway.app/conversations/save', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  conversation_id: currentConversationId,
-                  messages: messagesToSave,
-                  title: userQuestion.substring(0, 50) || 'Untitled',
-                  user_id: user.id
-                })
-              }).catch(dbError => console.log('Note: Could not save to database, but chat saved locally'));
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+
+              if (data.done) {
+                // Streaming finished
+                setLoading(false);
+
+                // Save to database if user is logged in
+                const token = localStorage.getItem('access_token');
+                const userData = localStorage.getItem('user');
+
+                if (token && userData && !isGuest) {
+                  const user = JSON.parse(userData);
+
+                  const messagesToSave = [...newMessages, { role: 'bot', content: fullAnswer }].map(msg => ({
+                    question: msg.role === 'user' ? msg.content : '',
+                    answer: msg.role === 'bot' ? msg.content : ''
+                  }));
+
+                  fetch('https://legal-llm-backend-production.up.railway.app/conversations/save', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      conversation_id: currentConversationId,
+                      messages: messagesToSave,
+                      title: userQuestion.substring(0, 50) || 'Untitled',
+                      user_id: user.id
+                    })
+                  }).catch(dbError => console.log('Note: Could not save to database, but chat saved locally'));
+                }
+              } else if (data.error) {
+                // Error occurred
+                setLoading(false);
+                botMessage = { role: 'bot', content: `Error: ${data.error}` };
+                updatedMessages = [...newMessages, botMessage];
+                setMessages(updatedMessages);
+                saveMessagesToConversation(updatedMessages);
+              } else if (data.word) {
+                // Stream word received with delay
+                setTimeout(() => {
+                  fullAnswer += data.word;
+                  botMessage = { role: 'bot', content: fullAnswer };
+                  updatedMessages = [...newMessages, botMessage];
+                  setMessages(updatedMessages);
+                  saveMessagesToConversation(updatedMessages);
+                }, 50);
+              }
+            } catch (error) {
+              console.error('Error parsing SSE data:', error);
             }
-          } else if (data.error) {
-            // Error occurred
-            eventSource.close();
-            botMessage = { role: 'bot', content: `Error: ${data.error}` };
-            updatedMessages = [...newMessages, botMessage];
-            setMessages(updatedMessages);
-            saveMessagesToConversation(updatedMessages);
-          } else if (data.word) {
-            // Stream word received
-            setTimeout(() => {
-            fullAnswer += data.word;
-            botMessage = { role: 'bot', content: fullAnswer };
-            updatedMessages = [...newMessages, botMessage];
-            setMessages(updatedMessages);
-            saveMessagesToConversation(updatedMessages);
-          }, 150);
+          }
         }
-        } catch (error) {
-          console.error('Error parsing SSE data:', error);
-        }
-      };
-
-      eventSource.onerror = (error) => {
-        console.error('SSE Error:', error);
-        eventSource.close();
-        setLoading(false);
-
-        const botMessage = { role: 'bot', content: 'Error: Connection failed. Please try again.' };
-        const updatedMessages = [...newMessages, botMessage];
-        setMessages(updatedMessages);
-        saveMessagesToConversation(updatedMessages);
-      };
-
+      }
     } catch (error) {
+      setLoading(false);
       const botMessage = { role: 'bot', content: `Error: ${error.message}` };
       const updatedMessages = [...newMessages, botMessage];
       setMessages(updatedMessages);
       saveMessagesToConversation(updatedMessages);
-      setLoading(false);
     }
   };
 
