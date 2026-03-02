@@ -242,7 +242,7 @@ const eventSource = new EventSource(url);
             updatedMessages = [...newMessages, botMessage];
             setMessages(updatedMessages);
             saveMessagesToConversation(updatedMessages);
-          }, 50);
+          }, 150);
         }
         } catch (error) {
           console.error('Error parsing SSE data:', error);
