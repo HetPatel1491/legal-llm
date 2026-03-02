@@ -181,8 +181,15 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
       let updatedMessages = [...newMessages, botMessage];
       setMessages(updatedMessages);
 
-      const url = `https://legal-llm-backend-production.up.railway.app/ask?question=${encodeURIComponent(userQuestion)}&format=${responseFormat}`;
-      const eventSource = new EventSource(url);
+      // Prepare conversation history to send to backend
+const conversationHistory = messages.map(msg => ({
+  role: msg.role,
+  content: msg.content
+}));
+
+const historyParam = encodeURIComponent(JSON.stringify(conversationHistory));
+const url = `https://legal-llm-backend-production.up.railway.app/ask?question=${encodeURIComponent(userQuestion)}&format=${responseFormat}&conversation_history=${historyParam}`;
+const eventSource = new EventSource(url);
 
       let fullAnswer = '';
 
