@@ -196,7 +196,6 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
         body: JSON.stringify({
           question: userQuestion,
           format: responseFormat,
-          conversation_history: conversationHistory
         })
       });
 
