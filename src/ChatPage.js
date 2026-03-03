@@ -343,7 +343,7 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
             </div>
 
             <div className="disclaimer">
-              ⚠️ Legal AI is AI and can make mistakes. Please double-check responses before using as legal advice.
+              ⚠️ Legal AI is AI and can make mistakes. Please double-check responses.
             </div>
           </div>
         </div>
