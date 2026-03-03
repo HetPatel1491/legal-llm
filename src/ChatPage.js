@@ -264,7 +264,7 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
                   updatedMessages = [...newMessages, botMessage];
                   setMessages(updatedMessages);
                   saveMessagesToConversation(updatedMessages);
-                }, 50);
+                }, 150);
               }
             } catch (error) {
               console.error('Error parsing SSE data:', error);
