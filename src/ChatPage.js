@@ -295,9 +295,8 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
       <div className="chat-page">
         <div className="chat-container">
           <div className="chat-header">
-            <button className="back-btn" onClick={onBackToHome}>← Back</button>
-            <button className="menu-btn" onClick={toggleSidebar}>☰ Menu</button>
             <h1>⚖️ Legal AI</h1>
+            <button className="menu-btn" onClick={toggleSidebar}>☰</button>
             {isGuest && <p className="guest-badge">Guest Mode ({questionCount}/5)</p>}
             
             {isGuest && (
