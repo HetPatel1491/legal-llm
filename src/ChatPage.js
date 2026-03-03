@@ -290,6 +290,12 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
         <div className="chat-container">
           <div className="chat-header">
             <h1>⚖️ Legal AI</h1>
+            {isGuest && (
+              <div className="guest-auth-buttons">
+                <button className="guest-sign-in" onClick={onSignIn}>onSignIn</button>
+                <button className="guest-sign-up" onClick={onSignUp}>onSignUp</button>
+                </div>
+            )}
             <button className="menu-btn" onClick={toggleSidebar}>☰</button>
           </div>
 
@@ -343,7 +349,7 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
             </div>
 
             <div className="disclaimer">
-              ⚠️ Legal AI is AI and can make mistakes. Please double-check responses.
+              ⚠️ Legal AI is AI and can make mistakes.
             </div>
           </div>
         </div>

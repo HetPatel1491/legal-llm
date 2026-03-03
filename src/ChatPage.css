@@ -31,6 +31,76 @@
   gap: 16px;
 }
 
+/* Guest auth buttons - compact, right side */
+.guest-auth-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0 auto 0 auto;
+}
+
+.guest-sign-in {
+  padding: 6px 12px;
+  background-color: transparent;
+  color: #0066cc;
+  border: 1px solid #0066cc;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.guest-sign-in:hover {
+  background-color: #f0f7ff;
+}
+
+.guest-sign-up {
+  padding: 6px 12px;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.guest-sign-up:hover {
+  background-color: #0052a3;
+}
+
+/* Mobile - hide on small screens, move to separate row if needed */
+@media (max-width: 768px) {
+  .guest-auth-buttons {
+    display: flex;
+    gap: 6px;
+    margin: 0;
+    order: 3;
+  }
+
+  .guest-sign-in,
+  .guest-sign-up {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .guest-auth-buttons {
+    gap: 4px;
+  }
+
+  .guest-sign-in,
+  .guest-sign-up {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+}
+
 .chat-header h1 {
   font-size: 18px;
   font-weight: 600;
