@@ -181,13 +181,7 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
       let updatedMessages = [...newMessages, botMessage];
       setMessages(updatedMessages);
 
-      // Prepare conversation history
-      const conversationHistory = messages.map(msg => ({
-        role: msg.role,
-        content: msg.content
-      }));
-
-      // Send POST request with conversation history
+      // Send POST request
       const response = await fetch('https://legal-llm-backend-production.up.railway.app/ask', {
         method: 'POST',
         headers: {
@@ -195,7 +189,7 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
         },
         body: JSON.stringify({
           question: userQuestion,
-          format: responseFormat,
+          format: responseFormat
         })
       });
 
@@ -257,14 +251,14 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
                 setMessages(updatedMessages);
                 saveMessagesToConversation(updatedMessages);
               } else if (data.word) {
-                // Stream word received with delay
+                // Stream word received with delay for smooth effect
                 setTimeout(() => {
                   fullAnswer += data.word;
                   botMessage = { role: 'bot', content: fullAnswer };
                   updatedMessages = [...newMessages, botMessage];
                   setMessages(updatedMessages);
                   saveMessagesToConversation(updatedMessages);
-                }, 250);
+                }, 50);
               }
             } catch (error) {
               console.error('Error parsing SSE data:', error);
@@ -297,24 +291,12 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
           <div className="chat-header">
             <h1>⚖️ Legal AI</h1>
             <button className="menu-btn" onClick={toggleSidebar}>☰</button>
-            {isGuest && <p className="guest-badge">Guest Mode ({questionCount}/5)</p>}
-            
-            {isGuest && (
-              <div className="auth-buttons">
-                <button className="header-btn sign-in-btn" onClick={onSignIn}>
-                  Sign In
-                </button>
-                <button className="header-btn sign-up-btn" onClick={onSignUp}>
-                  Sign Up
-                </button>
-              </div>
-            )}
           </div>
 
           <div className="chat-messages">
             {messages.length === 0 && (
               <div className="empty-state">
-                <h2>⚖️ Welcome to Legal AI</h2>
+                <h2>Welcome to Legal AI</h2>
                 <p>Ask any legal question and get instant answers</p>
               </div>
             )}
@@ -334,33 +316,35 @@ function ChatPage({ isGuest, onBackToHome, onSignIn, onSignUp }) {
           </div>
 
           <div className="chat-input-area">
-            <select 
-              value={responseFormat} 
-              onChange={(e) => setResponseFormat(e.target.value)}
-              className="format-selector"
-              disabled={loading}
-            >
-              <option value="detailed">Detailed</option>
-              <option value="bullets">Bullet Points</option>
-              <option value="simple">Simple</option>
-              <option value="qa">Q&A</option>
-            </select>
+            <div className="input-row">
+              <select 
+                value={responseFormat} 
+                onChange={(e) => setResponseFormat(e.target.value)}
+                className="format-selector"
+                disabled={loading}
+              >
+                <option value="detailed">Detailed</option>
+                <option value="bullets">Bullets</option>
+                <option value="simple">Simple</option>
+                <option value="qa">Q&A</option>
+              </select>
 
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder="Ask a legal question..."
-              disabled={loading}
-            />
-            <button onClick={handleSendMessage} disabled={loading}>
-              Send
-            </button>
-          </div>
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                placeholder="Ask a legal question..."
+                disabled={loading}
+              />
+              <button onClick={handleSendMessage} disabled={loading}>
+                Send
+              </button>
+            </div>
 
-          <div className="disclaimer">
-            ⚠️ Legal AI is AI and can make mistakes. Please double-check the responses before using them as legal advice.
+            <div className="disclaimer">
+              ⚠️ Legal AI is AI and can make mistakes. Please double-check responses before using as legal advice.
+            </div>
           </div>
         </div>
       </div>
